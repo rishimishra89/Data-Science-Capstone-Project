@@ -4,21 +4,12 @@ import pickle
 from sklearn.preprocessing import StandardScaler, OneHotEncoder
 from sklearn.compose import ColumnTransformer
 from sklearn.pipeline import Pipeline
+from sklearn.ensemble import RandomForestRegressor
 
-# Load the saved model
-with open('car_price_model.pkl', 'rb') as file:
-    model = pickle.load(file)
 
-# Define preprocessing pipeline
-categorical_columns = ['fuel', 'seller_type', 'transmission', 'owner']
-numerical_columns = ['year', 'km_driven']
-
-preprocessor = ColumnTransformer(
-    transformers=[
-        ('num', StandardScaler(), numerical_columns),
-        ('cat', OneHotEncoder(drop='first'), categorical_columns)
-    ]
-)
+# Load the saved pipeline
+with open('car_price_pipeline.pkl', 'rb') as file:
+    pipeline = pickle.load(file)
 
 # Streamlit app title
 st.title("Car Price Prediction App")
@@ -39,11 +30,9 @@ if st.button("Predict Selling Price"):
         columns=['year', 'km_driven', 'fuel', 'seller_type', 'transmission', 'owner']
     )
     
-    # Preprocess the input data
-    preprocessed_data = preprocessor.fit_transform(input_data)
-    
-    # Make prediction
-    prediction = model.predict(preprocessed_data)
+    # Use the pipeline to predict
+    prediction = pipeline.predict(input_data)
     
     # Display the predicted price
     st.success(f"Predicted Selling Price: ₹{prediction[0]:,.2f}")
+
